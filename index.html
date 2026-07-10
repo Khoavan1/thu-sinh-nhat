@@ -1,9 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thiệp mời sinh nhật Khoa Văn</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500;1,9..144,600&family=Libre+Caslon+Text:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:      #130E10;
+    --bg-2:    #1B1315;
+    --ink:     #EEE4D3;
+    --ink-dim: rgba(238,228,211,0.5);
+    --gold:    #C79A4B;
+    --gold-2:  #8C6A2C;
+    --wine:    #5E2226;
+    --flame-1: #FFD37A;
+    --flame-2: #E2793B;
+    --flame-3: #8C3B1E;
+  }
 
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; min-height:100vh;
+    background: #130E10;
+    color: var(--ink);
+    font-family: 'Libre Caslon Text', serif;
+    display:flex; align-items:center; justify-content:center;
+    padding: 40px 16px;
+  }
 
+  .form-container {
+    background: #1D1518;
+    border: 1px solid rgba(199,154,75,0.22);
+    border-radius: 2px;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.6);
+    padding: 40px 32px;
+    width: min(94vw, 420px);
+    text-align: center;
+    position: relative;
+  }
+  .form-container::before {
+    content: ""; position: absolute; inset: 10px;
+    border: 1px solid rgba(199,154,75,0.14); pointer-events: none;
+  }
+  .form-container h2 {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 28px;
+    margin-top: 0;
+  }
+  .form-group {
+    margin: 30px 0;
+    text-align: left;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--gold-2);
+    margin-bottom: 10px;
+  }
+  .form-group input, .form-group textarea {
+    width: 100%;
+    background: #130E10;
+    border: 1px solid rgba(199,154,75,0.3);
+    color: var(--ink);
+    padding: 12px;
+    font-family: 'Libre Caslon Text', serif;
+    font-size: 16px;
+    outline: none;
+    border-radius: 2px;
+  }
+  .form-group textarea {
+    height: 100px;
+    resize: none;
+  }
+  .btn-generate {
+    display: inline-block;
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Libre Caslon Text', serif;
+    font-size: 13.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background .3s, color .3s;
+  }
+  .btn-generate:hover {
+    background: var(--gold);
+    color: #1B1315;
+  }
 
+  .stage{
+    position:relative;
+    width:min(94vw, 420px);
+    display: none;
+  }
+
+  .frame{
+    position:relative;
+    background: #1D1518;
+    border: 1px solid rgba(199,154,75,0.22);
+    border-radius: 2px;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.6);
+    padding: 54px 32px 40px;
+    overflow: hidden;
+  }
+
+  .candle-zone{
+    position:relative;
+    height: 96px;
+    display:flex; align-items:flex-end; justify-content:center;
+    margin-bottom: 6px;
+    cursor:pointer;
+  }
+  .wax{
+    width: 16px; height: 46px;
+    background: linear-gradient(180deg, #F2E6C9, #DCC894);
+    border-radius: 2px;
+    position:relative;
+    z-index:2;
+  }
+  .wax::after{
+    content:""; position:absolute; left:50%; top:-4px;
+    width:2px; height:8px; background:#3a3025; transform: translateX(-50%);
+  }
+  .flame{
+    position:absolute; left:50%; bottom: 50px;
+    width: 15px; height: 26px; transform: translateX(-50%) scale(0.05);
+    opacity:0;
+    background: radial-gradient(circle at 50% 78%, var(--flame-1) 0%, var(--flame-2) 46%, var(--flame-3) 82%, transparent 100%);
+    clip-path: path('M7.5 0C10 7 15 12 15 18C15 23 11.6 26 7.5 26C3.4 26 0 23 0 18C0 12 5 7 7.5 0Z');
+    transition: all .4s ease;
+    z-index:3;
+  }
+  .candle-zone.lit .flame{
+    opacity:1; transform: translateX(-50%) scale(1);
+    animation: flicker 2.6s ease-in-out infinite;
+  }
+  @keyframes flicker{
+    0%,100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+    50% { transform: translateX(-51%) scale(1.03,0.97) rotate(1deg); }
+  }
+
+  .prompt{
+    position:absolute; bottom: -22px; left:0; right:0;
+    text-align:center; font-size: 11.5px; letter-spacing:.24em;
+    text-transform:uppercase; color: var(--ink-dim);
+  }
+  .candle-zone.lit .prompt{ display:none; }
+
+  .overlay{
+    position:absolute; inset:0;
+    background: #150F11;
+    z-index: 5;
+    pointer-events:none;
+    transition: opacity 1s ease;
+  }
+  .frame.lit .overlay{ opacity: 0; }
+
+  .content{ position:relative; z-index:2; text-align:center; }
+  .eyebrow{ font-size: 12px; letter-spacing: .34em; text-transform: uppercase; color: var(--gold); margin: 30px 0 16px; }
+  .title{ font-family:'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 32px; margin: 0 0 6px; }
+  .title strong{ display:block; font-weight:600; color: var(--flame-1); margin-top: 4px; }
+  .rule{ width: 46px; height:1px; background: var(--gold-2); margin: 22px auto; }
+  .lead{ font-size: 16px; line-height: 1.75; color: rgba(238,228,211,0.82); margin: 0 auto 26px; }
+  .guest-highlight { color: var(--flame-1); font-weight: bold; }
+  
+  .details{ display:grid; gap: 13px; margin: 0 auto 26px; text-align:left; }
+  .detail-row{ display:flex; gap:16px; padding-bottom: 10px; border-bottom: 1px solid rgba(199,154,75,0.16); }
+  .detail-label{ flex: 0 0 88px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold-2); }
+  .detail-value{ font-size: 16px; }
+
+  .rsvp{ font-size: 14px; color: var(--ink-dim); margin-bottom: 16px; }
+  .rsvp a{ color: var(--flame-1); text-decoration:none; }
+  .rsvp-btn{ display:inline-block; padding: 11px 32px; border: 1px solid var(--gold); color: var(--gold); font-size: 13.5px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
+  .rsvp-btn:hover{ background: var(--gold); color: #1B1315; }
+  .signoff{ margin-top: 30px; font-size: 11.5px; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-dim); }
+
+  .wish-modal {
+    position: fixed; inset: 0; background: rgba(13, 9, 9, 0.9);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; z-index: 100; transition: opacity 0.4s ease;
+  }
+  .wish-modal.show { opacity: 1; pointer-events: auto; }
+  .btn-flex-group { display: flex; gap: 12px; margin-top: 15px; }
+  .btn-secondary { border: 1px solid var(--ink-dim); color: var(--ink-dim); }
+</style>
+</head>
+<body>
 
 <div class="form-container" id="formContainer">
   <h2>Thư Mời Dự Tiệc</h2>
@@ -16,17 +209,16 @@
 
 <div class="stage" id="cardStage">
   <div class="frame" id="frame">
-
+    <div class="overlay"></div>
     <div class="content">
-      <div class="candle-zone" id="candle" tabindex="0" role="button" aria-label="Thắp nến để mở thiệp mời">
-        <div class="glow"></div>
+      <div class="candle-zone" id="candle">
         <div class="wax"></div>
         <div class="flame"></div>
         <div class="prompt">Chạm để thắp nến</div>
       </div>
 
       <p class="eyebrow">Một năm nữa, một ly nữa</p>
-      <h1 class="title">Tiệc sinh nhật<strong>Khoa Văn</strong></h1>
+      <h1 class="title">Tiệc sinh nhật <strong>Khoa Văn</strong></h1>
 
       <div class="rule"></div>
 
@@ -56,11 +248,7 @@
 
       <p class="signoff">— CÙNG THẮP NẾN MỪNG BẠN —</p>
     </div>
-
-    <div class="overlay"></div>
   </div>
-
-  <p class="note">Nhấn vào cây nến để mở thiệp</p>
 </div>
 
 <div class="wish-modal" id="wishModal">
@@ -76,3 +264,58 @@
     </div>
   </div>
 </div>
+
+<script>
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWXL5oOq7niHjvg5uyEl2BtVnYckBFfkmKRx1guUMCQPT3BtWo8MaeRp_FFPO0u41P/exec";
+  let guestName = "a";
+
+  function generateClassicCard() {
+    const nameInput = document.getElementById('txtGuestName').value.trim();
+    if (nameInput === "") {
+      alert("Vui lòng nhập tên của bạn để mở thư mời nhé!");
+      return;
+    }
+    guestName = nameInput;
+    document.getElementById('lblGuest').innerText = guestName;
+    document.getElementById('formContainer').style.display = 'none';
+    document.getElementById('cardStage').style.display = 'block';
+  }
+
+  const candle = document.getElementById('candle');
+  const frame  = document.getElementById('frame');
+  candle.addEventListener('click', () => {
+    candle.classList.add('lit');
+    frame.classList.add('lit');
+  });
+
+  function openWishModal() { document.getElementById('wishModal').classList.add('show'); }
+
+  function saveToGoogleSheet(name, wish, callback) {
+    document.getElementById('btnSend').disabled = true;
+    document.getElementById('btnSend').innerText = "Đang gửi...";
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: name, wish: wish })
+    }).then(() => callback()).catch(() => callback());
+  }
+
+  function sendWish() {
+    const wishText = document.getElementById('txtWish').value.trim();
+    if(wishText === "") { alert("Bạn chưa nhập lời chúc kìa!"); return; }
+    saveToGoogleSheet(guestName, wishText, function() {
+      document.getElementById('wishModal').classList.remove('show');
+      alert(`Cảm ơn lời chúc của ${guestName} nha! Khoa Văn nhận được rồi! ❤️`);
+    });
+  }
+
+  function skipWish() {
+    saveToGoogleSheet(guestName, "Chỉ xác nhận tham dự", function() {
+      document.getElementById('wishModal').classList.remove('show');
+      alert(`Khoa Văn đã ghi nhận sự tham dự của ${guestName}! Hẹn gặp bạn nha! ✨`);
+    });
+  }
+</script>
+</body>
+</html>
